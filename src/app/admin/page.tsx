@@ -287,7 +287,7 @@ export default function AdminPage() {
       const newLook: LookbookItem = {
         ...lookForm,
         code: lookForm.refCode || 'AB-101',
-        id: `look-${Date.now()}`
+        id: `look-${Date.now()}`,
         likes: '1.2k'
       };
       updated = [newLook, ...lookbook];
