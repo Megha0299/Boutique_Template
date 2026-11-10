@@ -288,6 +288,7 @@ export default function AdminPage() {
         ...lookForm,
         code: lookForm.refCode || 'AB-101',
         id: `look-${Date.now()}`
+        likes: '1.2k'
       };
       updated = [newLook, ...lookbook];
     }
