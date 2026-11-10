@@ -10,7 +10,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
 };
 
-// Check if valid credentials exist before attempting initialization
+// Check if a real key exists before starting Firebase
 const hasValidConfig = Boolean(
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'undefined' &&
@@ -25,7 +25,7 @@ try {
     db = getFirestore(app);
   }
 } catch (error) {
-  console.warn('Firebase initialization skipped or failed during build:', error);
+  console.warn('Skipping Firebase init during build:', error);
   db = null;
 }
 
