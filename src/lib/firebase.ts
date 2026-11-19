@@ -1,5 +1,6 @@
 ﻿import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
@@ -10,7 +11,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
 };
 
-// Check if a real key exists before starting Firebase
 const hasValidConfig = Boolean(
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'undefined' &&
@@ -18,15 +18,18 @@ const hasValidConfig = Boolean(
 );
 
 let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
 
 try {
   if (hasValidConfig) {
     const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     db = getFirestore(app);
+    storage = getStorage(app);
   }
 } catch (error) {
   console.warn('Skipping Firebase init during build:', error);
   db = null;
+  storage = null;
 }
 
-export { db };
+export { db, storage };
