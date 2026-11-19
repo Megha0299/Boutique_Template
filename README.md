@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ahalya's Boutique — Madurai Heritage Weaves & Bespoke Couture
 
-## Getting Started
+A modern, culturally rooted e-commerce showcase, custom tailoring booking platform, and affiliate lookbook CMS built for **Ahalya's Boutique** (West Masi Street, Madurai, Tamil Nadu).
 
-First, run the development server:
+🌐 **Live Demo:** [https://boutique-template-8o9rw50bq-robo-web-technologies.vercel.app/](https://boutique-template-8o9rw50bq-robo-web-technologies.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Heritage Storefront & Curated Catalogue:** Showcases authentic Madurai Sungudi cottons, Silk Mark certified Kanchipuram bridal pattu silks, Pavadai Dhavani sets, and festive ethnic collections.
+- **Interactive Shopping Experience Selector:** Tailored dual-mode flow guiding customers between in-store flagship visits in Madurai and pan-Tamil Nadu/global online orders.
+- **WhatsApp Direct Ordering & Consultation:** Frictionless, login-free inquiry and ordering workflow with pre-filled WhatsApp product messages, measurement booking details, and referral discount tracking.
+- **Custom Stitching & Bridal Aari Booking:** Dedicated appointment and tailoring request flows for custom Aari embroidery blouses, designer blouses, and saree fall/pico services.
+- **Live Instagram Lookbook & Affiliate Styling Feed:** Shoppable social lookbook cards supporting direct e-commerce affiliate links (Amazon, Flipkart, Myntra) with real-time updates from the Admin CMS.
+- **Staff Admin CMS (`/admin`):** PIN-protected dashboard with Master Recovery Key support, client-side JPEG image compression, and live lookbook/banner/affiliate management backed by Firebase and LocalStorage fallback.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework:** Next.js 16 (App Router, Turbopack) & React
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS & Lucide React Icons
+- **Backend & Storage:** Firebase (Cloud Firestore & Storage) with resilient LocalStorage state synchronization
+- **Deployment:** Vercel (Continuous Deployment via GitHub)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Project Structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+src/
+├── app/
+│   ├── about/              # Brand & Madurai weaver heritage story
+│   ├── admin/              # PIN-protected Staff CMS dashboard
+│   ├── book-appointment/   # In-store trial & video consultation booking
+│   ├── contact/            # West Masi Street flagship location & contact details
+│   ├── custom-stitching/   # Bespoke Aari & blouse tailoring request form
+│   ├── product/[id]/       # Individual product detail view
+│   ├── shop/               # Filterable boutique catalogue
+│   ├── trending/           # Curated marketplace deals & social lookbook
+│   ├── layout.tsx          # Global layout, metadata & navigation shell
+│   └── page.tsx            # Main storefront homepage with live CMS listeners
+├── components/
+│   └── ShoppingExperience.tsx  # In-store vs. online shopping mode selector
+└── lib/
+    ├── cmsStore.ts         # Unified Firebase + LocalStorage CMS data layer
+    ├── firebase.ts         # Guarded Firebase App, Firestore & Storage initialization
+    └── products.ts         # Boutique catalogue & initial lookbook data
