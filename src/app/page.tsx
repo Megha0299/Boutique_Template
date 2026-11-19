@@ -1,541 +1,578 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { products, lookbookItems as initialLookbook, LookbookItem } from '../lib/products';
-import { ShoppingBag, Scissors, CheckCircle2, Star, MapPin, ArrowRight, ExternalLink, Phone } from 'lucide-react';
-import ShoppingExperience from '../components/ShoppingExperience';
-import { addCustomerAppointment, getCMSLookbook } from '../lib/cmsStore';
+import {
+  Sparkles,
+  ShoppingBag,
+  Scissors,
+  Calendar,
+  MapPin,
+  Phone,
+  Camera,
+  ExternalLink,
+  Heart,
+  ShieldCheck,
+  Award,
+  Truck,
+  ArrowRight,
+  Star,
+  CheckCircle2,
+  Menu,
+  X
+} from 'lucide-react';
+
+import {
+  getCMSLookbook,
+  getCMSAffiliates,
+  getCMSBanners,
+  LookbookItem,
+  AffiliateItem,
+  BannerItem
+} from '@/lib/cmsStore';
 
 export default function HomePage() {
-  const [liveLookbook, setLiveLookbook] = useState<LookbookItem[]>(initialLookbook);
+  const [lookbook, setLookbook] = useState<LookbookItem[]>([]);
+  const [affiliates, setAffiliates] = useState<AffiliateItem[]>([]);
+  const [banners, setBanners] = useState<BannerItem[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Load current saved items from admin
-    const stored = getCMSLookbook();
-    if (stored && stored.length > 0) {
-      setLiveLookbook(stored);
-    }
-
-    // Listen for live updates from admin in same session
-    const handleUpdate = () => {
-      setLiveLookbook(getCMSLookbook());
-    };
-    window.addEventListener('lookbook_updated', handleUpdate);
-    window.addEventListener('storage', handleUpdate);
-    return () => {
-      window.removeEventListener('lookbook_updated', handleUpdate);
-      window.removeEventListener('storage', handleUpdate);
-    };
+    setLookbook(getCMSLookbook());
+    setAffiliates(getCMSAffiliates());
+    setBanners(getCMSBanners());
   }, []);
 
-  const [quickForm, setQuickForm] = useState({
-    name: '',
-    phone: '',
-    serviceType: 'Bridal Aari Work Blouse',
-    appointmentMode: 'In-Store Trial Madurai Studio',
-    preferredDate: '',
-    preferredTime: '11:00 AM – 01:00 PM',
-    referralCode: '',
-    notes: '',
-  });
-
-  const handleQuickAppointmentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    await addCustomerAppointment({
-      name: quickForm.name,
-      phone: quickForm.phone,
-      serviceType: quickForm.serviceType,
-      appointmentMode: quickForm.appointmentMode,
-      preferredDate: quickForm.preferredDate,
-      preferredTime: quickForm.preferredTime,
-      referralCode: quickForm.referralCode,
-      notes: quickForm.notes,
-    });
-
-    const referralText = quickForm.referralCode
-      ? `%0A*Referral Code Applied:* ${encodeURIComponent(quickForm.referralCode)} 10% Off Stitching Quote`
-      : '';
-
-    const msg = `*Quick Fitting Appointment Booking - Ahalya's Boutique*%0A%0A*Name:* ${encodeURIComponent(quickForm.name)}%0A*Phone:* ${encodeURIComponent(quickForm.phone)}%0A*Service:* ${encodeURIComponent(quickForm.serviceType)}%0A*Preferred Date:* ${encodeURIComponent(quickForm.preferredDate)}${referralText}`;
-
-    window.open(`https://wa.me/919443215678?text=${msg}`, '_blank');
-  };
+  const activeBanner = banners.length > 0 ? banners[0] : null;
 
   return (
-    <div className="space-y-16 pb-12 font-sans bg-[#fcfaf7]">
-      
-      {/* 1. Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <span className="inline-block bg-[#f8ede3] text-[#780016] border border-[#ecd2bf] text-xs font-semibold px-3 py-1 rounded-full">
-              ✨ Madurai benchmark in traditional couture
-            </span>
-            <h1 className="text-4xl sm:text-5xl font-serif font-bold text-[#780016] leading-tight">
-              Elegance Woven for <br />
-              <span className="text-[#a46e30]">the Tamil Soul</span>
+    <div className="min-h-screen bg-[#faf6f0] text-stone-800 font-sans selection:bg-[#780016] selection:text-amber-200">
+      {/* Top Heritage Announcement Bar */}
+      <div className="bg-[#780016] text-amber-200 text-xs py-2 px-4 text-center font-medium tracking-wide">
+        {activeBanner?.title
+          ? `${activeBanner.title} — ${activeBanner.subtitle || 'West Masi Street, Madurai'}`
+          : 'Authentic Madurai Sungudi Cottons & Silk Mark Kanchipuram Silks • West Masi Street, Madurai'}
+      </div>
+
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 py-3.5 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-full bg-[#780016] text-amber-300 flex items-center justify-center font-serif font-black text-xl shadow-sm">
+              A
+            </div>
+            <div>
+              <span className="font-serif font-black text-xl sm:text-2xl text-[#780016] tracking-tight block leading-none">
+                Ahalya&apos;s Boutique
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-stone-500 font-bold">
+                Madurai Heritage Weaves
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-7 text-xs font-bold uppercase tracking-wider text-stone-700">
+            <Link href="/shop" className="hover:text-[#780016] transition-colors">
+              Collections
+            </Link>
+            <Link href="/custom-stitching" className="hover:text-[#780016] transition-colors">
+              Aari &amp; Stitching
+            </Link>
+            <Link href="/trending" className="hover:text-[#780016] transition-colors">
+              Curated Picks
+            </Link>
+            <Link href="/about" className="hover:text-[#780016] transition-colors">
+              Our Story
+            </Link>
+            <Link href="/contact" className="hover:text-[#780016] transition-colors">
+              Visit Studio
+            </Link>
+          </nav>
+
+          {/* CTA & Mobile Menu Toggle */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/book-appointment"
+              className="hidden sm:inline-flex items-center gap-1.5 bg-[#780016] text-amber-200 hover:bg-[#5e0011] text-xs font-bold px-4 py-2.5 rounded-xl transition-colors shadow-sm"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              Book Trial
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg text-stone-700 hover:bg-stone-100"
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-stone-200 px-4 py-4 space-y-3 text-sm font-bold text-stone-700">
+            <Link href="/shop" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 hover:text-[#780016]">
+              Collections
+            </Link>
+            <Link href="/custom-stitching" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 hover:text-[#780016]">
+              Aari &amp; Custom Stitching
+            </Link>
+            <Link href="/trending" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 hover:text-[#780016]">
+              Curated Marketplace Picks
+            </Link>
+            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 hover:text-[#780016]">
+              Our Heritage
+            </Link>
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 hover:text-[#780016]">
+              Contact &amp; Location
+            </Link>
+            <Link
+              href="/book-appointment"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-center bg-[#780016] text-amber-200 py-2.5 rounded-xl mt-2"
+            >
+              Book Studio Appointment
+            </Link>
+          </div>
+        )}
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#5c0010] via-[#780016] to-[#42000b] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <div className="inline-flex items-center gap-2 bg-amber-400/15 border border-amber-300/30 text-amber-200 text-xs font-bold px-3.5 py-1.5 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <span>Temple City Bridal &amp; Handloom Studio</span>
+            </div>
+
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-amber-50">
+              Timeless Weaves from the Heart of <span className="text-amber-300">Madurai</span>
             </h1>
-            <p className="text-stone-600 text-sm max-w-lg leading-relaxed">
-              Authentic Madurai Sungudi cottons, bespoke Kanchipuram bridal drapes, and high-fashion hand-embroidered aari blouses tailored to perfection.
+
+            <p className="text-sm sm:text-base text-amber-100/90 max-w-2xl leading-relaxed">
+              Discover hand-knotted Madurai Sungudi cottons, Silk Mark certified Kanchipuram bridal pattu, and bespoke Aari embroidered blouses crafted by master artisans on West Masi Street.
             </p>
-            <div className="flex flex-wrap gap-4 pt-2">
+
+            <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <Link
                 href="/shop"
-                className="bg-[#780016] hover:bg-[#600012] text-white text-xs font-semibold px-6 py-3 rounded-xl flex items-center gap-2 shadow-sm transition"
+                className="inline-flex items-center gap-2 bg-amber-400 text-[#4a000d] hover:bg-amber-300 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl shadow-lg transition-all"
               >
                 <ShoppingBag className="w-4 h-4" />
-                Shop Now
+                Explore Collections
               </Link>
+
               <Link
                 href="/custom-stitching"
-                className="bg-[#fcfaf7] hover:bg-stone-100 text-[#780016] border border-[#a46e30]/40 text-xs font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition"
+                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-amber-200/30 text-amber-100 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl transition-all"
               >
-                <Scissors className="w-4 h-4 text-[#a46e30]" />
-                Custom Stitching
+                <Scissors className="w-4 h-4" />
+                Custom Blouse &amp; Aari
               </Link>
             </div>
-            <div className="flex items-center gap-6 pt-4 text-[11px] text-stone-500">
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-teal-600" /> Pure Silk Mark</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-teal-600" /> Guaranteed Fit</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-teal-600" /> All TN Shipping</span>
+
+            {/* Quick Trust Metrics */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-amber-200/15 max-w-lg">
+              <div>
+                <p className="font-serif font-black text-xl sm:text-2xl text-amber-300">100%</p>
+                <p className="text-[11px] text-amber-100/80">Silk Mark &amp; Pure Cotton</p>
+              </div>
+              <div>
+                <p className="font-serif font-black text-xl sm:text-2xl text-amber-300">72 Hr</p>
+                <p className="text-[11px] text-amber-100/80">Express Bridal Tailoring</p>
+              </div>
+              <div>
+                <p className="font-serif font-black text-xl sm:text-2xl text-amber-300">4.9 ★</p>
+                <p className="text-[11px] text-amber-100/80">Madurai &amp; Global Brides</p>
+              </div>
             </div>
           </div>
 
-          <div className="relative">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-white">
-              <img
-                src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"
-                alt="Madurai Heritage Edition Saree"
-                className="w-full h-[450px] object-cover"
-              />
-              <span className="absolute top-4 right-4 bg-teal-800 text-teal-100 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                ★ Madurai Handlooms
-              </span>
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 text-white">
-                <span className="text-[10px] uppercase tracking-widest text-amber-300 font-bold">
-                  Madurai Heritage Edition
-                </span>
-                <h3 className="font-serif font-bold text-lg">Kanchipuram Silk with Temple Borders</h3>
-                <p className="text-xs text-stone-300 mt-0.5">Code: AB-101 • ₹14,500</p>
+          {/* Hero Showcase Card */}
+          <div className="lg:col-span-5">
+            <div className="bg-white/10 backdrop-blur-md border border-amber-200/25 rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl">
+              <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-stone-900 relative">
+                <img
+                  src={
+                    lookbook[0]?.image ||
+                    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=900&q=80'
+                  }
+                  alt="Madurai Bridal Silk & Sungudi Showcase"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-3 left-3 right-3 bg-stone-950/85 backdrop-blur-sm p-3.5 rounded-xl border border-amber-400/30">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 block">
+                    Featured Festive Drape
+                  </span>
+                  <p className="font-serif font-bold text-sm text-white mt-0.5">
+                    {lookbook[0]?.productName || 'Kanchipuram Temple Border & Madurai Sungudi'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. Physical Visit vs Online Shopping Selector */}
-      <ShoppingExperience />
-
-      {/* 3. Curated Picks Grid */}
-      <section className="max-w-7xl mx-auto px-6 space-y-6">
-        <div className="flex justify-between items-end">
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700">Handpicked Handlooms</span>
-            <h2 className="text-2xl font-serif font-bold text-[#780016]">Curated Festive & Bridal Picks</h2>
-            <p className="text-xs text-stone-500 mt-0.5">Hand-picked Kanchipuram silks, Madurai Sungudi cottons, and artisan aari embroidery.</p>
+      {/* Value & Boutique Highlights */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-[#780016]/10 text-[#780016] flex items-center justify-center">
+              <Award className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-base text-stone-900">Heritage Handlooms</h3>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              Authentic Madurai Sungudi knot-dyed cottons and Silk Mark certified Kanchipuram bridal silks.
+            </p>
           </div>
-          <Link href="/shop" className="text-[#780016] text-xs font-semibold hover:underline flex items-center gap-1">
-            View Full Catalogue <ArrowRight className="w-3.5 h-3.5" />
+
+          <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-[#780016]/10 text-[#780016] flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-base text-stone-900">Master Aari Craft</h3>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              Intricate peacock motifs, zardosi, and temple-border bridal blouse work by seasoned artisans.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-[#780016]/10 text-[#780016] flex items-center justify-center">
+              <Scissors className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-base text-stone-900">Precision Fit Guarantee</h3>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              In-studio trials at West Masi Street or guided video measurement consultations for outstation orders.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-[#780016]/10 text-[#780016] flex items-center justify-center">
+              <Truck className="w-5 h-5" />
+            </div>
+            <h3 className="font-serif font-bold text-base text-stone-900">TN COD &amp; Express Ship</h3>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              Same-day Madurai pickup, Cash on Delivery across Tamil Nadu, and tracked worldwide shipping.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Shop by Category */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#780016]">Curated Wardrobe</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-black text-stone-900 mt-1">
+              Shop by Occasion &amp; Weave
+            </h2>
+          </div>
+          <Link
+            href="/shop"
+            className="text-xs font-bold text-[#780016] hover:underline inline-flex items-center gap-1"
+          >
+            View All Collections <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.slice(0, 4).map((item) => (
-            <div key={item.id} className="bg-white rounded-2xl border border-[#ede3d8] overflow-hidden shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="relative aspect-[3/4] bg-stone-100">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                  <span className="absolute top-3 left-3 bg-[#780016] text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                    {item.code}
-                  </span>
-                  <span className="absolute top-3 right-3 bg-amber-100 text-amber-800 text-[10px] font-semibold px-2 py-0.5 rounded">
-                    {item.category}
-                  </span>
-                </div>
-                <div className="p-4 space-y-2">
-                  <h3 className="font-medium text-stone-800 text-xs leading-snug line-clamp-2">
-                    {item.name}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-stone-900">₹{item.price.toLocaleString('en-IN')}</span>
-                    <span className="text-[11px] text-stone-400 line-through">₹{item.originalPrice.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 pt-0">
-                <a
-                  href={`https://wa.me/919443215678?text=I%20want%20to%20order%20${encodeURIComponent(item.name)}%20${item.code}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center gap-1.5 transition"
-                >
-                  <Phone className="w-3 h-3 fill-current" />
-                  Order on WhatsApp
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. Sponsored Partner Banner */}
-      <section className="max-w-7xl mx-auto px-6">
-        <div className="bg-gradient-to-r from-[#2a131b] via-[#3d1822] to-[#1a1215] text-white rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 border border-amber-900/40">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
-              Wedding Partner • Sri Meenakshi Swarna Mahal Jewellers - West Masi St, Madurai
-            </span>
-            <h3 className="text-lg font-serif font-bold text-amber-100">
-              Antique Temple Jewellery 0% Making Charge on Bridal Bookings
-            </h3>
-            <p className="text-xs text-stone-300">Special Madurai verified partner privileges for Ahalya patrons</p>
-          </div>
-          <button className="bg-amber-400 hover:bg-amber-300 text-stone-950 text-xs font-bold px-4 py-2.5 rounded-lg flex items-center gap-1.5 shrink-0 transition">
-            Enquire Sponsor <ExternalLink className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </section>
-
-      {/* 5. Browse By Category */}
-      <section className="max-w-7xl mx-auto px-6 space-y-6 text-center">
-        <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700">Heritage Collections</span>
-          <h2 className="text-2xl font-serif font-bold text-[#780016]">Browse By Category</h2>
-          <p className="text-xs text-stone-500 mt-1">Select any collection to view full details and designs</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { 
-              name: "Sarees", 
-              count: "140+ Designs", 
-              desc: "Sungudi & Kanchi Silks",
-              img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=500&q=80",
-              href: "/shop?category=Sarees"
+            {
+              title: 'Madurai Sungudi Cotton',
+              subtitle: 'Breathable traditional tie-dye sarees',
+              tag: 'Daily & Temple Wear',
+              href: '/shop?category=sungudi'
             },
-            { 
-              name: "Blouses", 
-              count: "85+ Patterns", 
-              desc: "Artisan Aari & Zardosi",
-              img: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=500&q=80",
-              href: "/shop?category=Blouses"
+            {
+              title: 'Kanchipuram Bridal Silk',
+              subtitle: 'Pure zari korvai & muhurtham drapes',
+              tag: 'Wedding Collection',
+              href: '/shop?category=kanchipuram'
             },
-            { 
-              name: "Kurtis", 
-              count: "60+ Styles", 
-              desc: "Cotton & Anarkali Sets",
-              img: "https://images.unsplash.com/photo-1596783074418-c44ab83dbff5?auto=format&fit=crop&w=500&q=80",
-              href: "/shop?category=Kurtis"
+            {
+              title: 'Bridal Aari Blouses',
+              subtitle: 'Custom-stitched maggam & stone work',
+              tag: 'Bespoke Tailoring',
+              href: '/custom-stitching'
             },
-            { 
-              name: "Bridal Wear", 
-              count: "Bespoke Sets", 
-              desc: "Muhurtham & Half Sarees",
-              img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80",
-              href: "/shop?category=Bridal Wear"
-            },
-            { 
-              name: "Kids Wear", 
-              count: "25+ Styles", 
-              desc: "Pattu Pavadai & Dhotis",
-              img: "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=500&q=80",
-              href: "/shop?category=Kids Wear"
+            {
+              title: 'Pavadai Dhavani Sets',
+              subtitle: 'Festive half-sarees for teens & brides',
+              tag: 'Festive Favorites',
+              href: '/shop?category=dhavani'
             }
-          ].map((cat, idx) => (
-            <Link 
-              key={idx} 
+          ].map((cat) => (
+            <Link
+              key={cat.title}
               href={cat.href}
-              className="relative rounded-2xl overflow-hidden aspect-[4/5] group cursor-pointer border-2 border-[#ebdccd] block shadow-sm hover:border-[#780016] transition"
+              className="group bg-white rounded-2xl p-6 border border-stone-200 hover:border-[#780016]/40 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-5"
             >
-              <img 
-                src={cat.img} 
-                alt={cat.name} 
-                className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-3.5 text-left">
-                <span className="font-serif font-bold text-white text-base group-hover:text-amber-200 transition">
-                  {cat.name}
+              <div className="space-y-2">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">
+                  {cat.tag}
                 </span>
-                <span className="text-[10px] text-amber-300 font-semibold">{cat.desc}</span>
-                <span className="text-[10px] text-stone-300 mt-0.5">{cat.count}</span>
+                <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-[#780016] transition-colors">
+                  {cat.title}
+                </h3>
+                <p className="text-xs text-stone-600">{cat.subtitle}</p>
               </div>
+              <span className="text-xs font-bold text-[#780016] inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                Explore <ArrowRight className="w-3.5 h-3.5" />
+              </span>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* 6. Trending on Instagram Feed - Reads Live Changes from Admin */}
-      <section className="max-w-7xl mx-auto px-6 space-y-6 font-sans">
-        <div className="flex justify-between items-end">
+      {/* Live Instagram Lookbook & Affiliate Styling Feed */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-14 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
-            <span className="text-[11px] font-bold text-rose-700 flex items-center gap-1">
-              📷 @ahalyas_boutique_madurai
+            <span className="text-xs font-bold uppercase tracking-widest text-[#780016] flex items-center gap-1.5">
+              <Camera className="w-3.5 h-3.5" /> @ahalya_madurai Lookbook
             </span>
-            <h2 className="text-2xl font-serif font-bold text-[#780016]">Trending on Instagram</h2>
-            <p className="text-xs text-stone-500 mt-0.5">Real brides and festive style inspirations tagged with #AhalyasMadurai</p>
+            <h2 className="font-serif text-2xl sm:text-3xl font-black text-stone-900 mt-1">
+              Shop Our Styled Reels &amp; Client Drapes
+            </h2>
           </div>
-          <Link href="/trending" className="border border-[#780016] text-[#780016] text-xs font-semibold px-4 py-1.5 rounded-full hover:bg-rose-50 transition">
-            View Lookbook
+          <Link
+            href="/trending"
+            className="text-xs font-bold text-[#780016] hover:underline inline-flex items-center gap-1"
+          >
+            See All Trending Deals <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {liveLookbook.map((look, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-[#ede3d8] overflow-hidden shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="p-3 flex justify-between items-center text-xs">
-                  <span className="font-semibold text-stone-800">{look.username}</span>
-                  <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider">{look.tag}</span>
-                </div>
-                
-                <a
-                  href={look.buyUrl || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block relative aspect-square group overflow-hidden"
-                >
-                  <img
-                    src={look.image}
-                    alt={look.tag}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                  <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[10px] font-semibold px-2 py-0.5 rounded backdrop-blur-sm">
-                    ❤️ {look.likes || '1.2k'}
-                  </span>
-                  <span className="absolute top-3 right-3 bg-stone-900 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded shadow">
-                    {look.platform || 'Amazon'}
-                  </span>
-                </a>
-
-                <p className="p-3 text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                  {look.caption}
-                </p>
-              </div>
-
-              <div className="p-3 border-t border-stone-100 flex justify-between items-center text-xs">
-                <span className="text-stone-500 font-mono text-[10px]">Product: <strong>{look.code}</strong></span>
-                <a
-                  href={look.buyUrl || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#780016] font-bold flex items-center gap-1 hover:underline"
-                >
-                  Buy this Look on {look.platform || 'Amazon'} <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 7. Custom Stitching Quick Appointment Form */}
-      <section className="max-w-7xl mx-auto px-6">
-        <div className="bg-[#fffdfa] border border-[#ebdccd] rounded-3xl p-8 lg:p-12 shadow-sm grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-4">
-            <span className="inline-block bg-[#f8ede3] text-[#780016] border border-[#ecd2bf] text-xs font-semibold px-3 py-1 rounded-full">
-              ✂ Madurai Bespoke Tailoring
-            </span>
-            <h2 className="text-3xl font-serif font-bold text-[#780016]">
-              Bespoke Bridal & Custom Tailoring
-            </h2>
-            <p className="text-stone-600 text-xs leading-relaxed">
-              Madurai master craftsmen craft your dream silhouette with precision measurements.
+        {lookbook.length === 0 ? (
+          <div className="bg-white rounded-2xl p-10 border border-stone-200 text-center space-y-2">
+            <p className="font-serif font-bold text-stone-800">New Festive Lookbook Loading Soon</p>
+            <p className="text-xs text-stone-500">
+              Visit our West Masi Street studio or browse our curated boutique collections.
             </p>
-            <div className="space-y-2.5 pt-2 text-xs text-stone-600">
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" /> Direct fitting at Madurai store or send your sample blouse</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" /> Express 7-10 day stitching with video fitting consultation</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" /> Safe 40% advance booking with full tracking</div>
-            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {lookbook.map((item) => {
+              const itemId = item.id || item.code;
+              return (
+                <div
+                  key={itemId}
+                  className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Edge-to-edge 3:4 Portrait Container */}
+                    <div className="relative aspect-[3/4] bg-stone-100 overflow-hidden">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.tag}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs text-stone-400">
+                          Image Preview
+                        </div>
+                      )}
+
+                      <span className="absolute top-3 left-3 bg-white/95 text-[#780016] text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+                        {item.tag}
+                      </span>
+
+                      <span className="absolute top-3 right-3 bg-stone-900/90 text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
+                        {item.platform || 'Amazon'}
+                      </span>
+                    </div>
+
+                    <div className="p-5 space-y-2.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-stone-800">{item.username}</span>
+                        <span className="inline-flex items-center gap-1 text-rose-600 font-semibold">
+                          <Heart className="w-3.5 h-3.5 fill-rose-600" /> {item.likes || '1.2k'}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">{item.caption}</p>
+
+                      {item.price > 0 && (
+                        <p className="text-sm font-black text-[#780016]">
+                          ₹{item.price.toLocaleString('en-IN')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-5 pt-0">
+                    {item.buyUrl ? (
+                      <a
+                        href={item.buyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 bg-[#780016] hover:bg-[#5e0011] text-amber-200 font-bold text-xs py-3 rounded-xl transition-colors shadow-sm"
+                      >
+                        Shop Look on {item.platform || 'Amazon'}
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    ) : (
+                      <Link
+                        href="/book-appointment"
+                        className="w-full inline-flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs py-3 rounded-xl transition-colors"
+                      >
+                        Enquire Custom Drape
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Curated Marketplace Deals (If Available in CMS) */}
+      {affiliates.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#780016]">Stylist Approved</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-black text-stone-900 mt-1">
+              Handpicked Jewellery &amp; Draping Essentials
+            </h2>
           </div>
 
-          <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-[#ebdccd] shadow-sm space-y-4">
-            <h3 className="font-serif font-bold text-[#780016] text-base">Quick Stitching & Fitting Appointment</h3>
-            
-            <form onSubmit={handleQuickAppointmentSubmit} className="space-y-3.5 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label className="block text-stone-900 font-bold mb-1">Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={quickForm.name}
-                    onChange={(e) => setQuickForm({ ...quickForm, name: e.target.value })}
-                    placeholder="e.g. Meenakshi Sundaram"
-                    className="w-full bg-white border-2 border-stone-300 rounded-xl px-3.5 py-2.5 text-stone-900 font-semibold placeholder:text-stone-400 focus:outline-none focus:border-[#780016]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-stone-900 font-bold mb-1">Phone Number WhatsApp *</label>
-                  <input
-                    type="tel"
-                    required
-                    value={quickForm.phone}
-                    onChange={(e) => setQuickForm({ ...quickForm, phone: e.target.value })}
-                    placeholder="+91 98420 XXXXX"
-                    className="w-full bg-white border-2 border-stone-300 rounded-xl px-3.5 py-2.5 text-stone-900 font-semibold placeholder:text-stone-400 focus:outline-none focus:border-[#780016]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label className="block text-stone-900 font-bold mb-1">Dress Type *</label>
-                  <select
-                    value={quickForm.serviceType}
-                    onChange={(e) => setQuickForm({ ...quickForm, serviceType: e.target.value })}
-                    className="w-full bg-white border-2 border-stone-300 rounded-xl px-3.5 py-2.5 text-stone-900 font-semibold focus:outline-none focus:border-[#780016] cursor-pointer"
-                  >
-                    <option value="Bridal Aari Work Blouse">Bridal Aari Work Blouse</option>
-                    <option value="Designer Saree Blouse">Designer Saree Blouse</option>
-                    <option value="Pavadai Dhavani Half Saree">Pavadai Dhavani Half Saree</option>
-                    <option value="Kids Pattu Pavadai / Dhoti">Kids Pattu Pavadai / Dhoti</option>
-                    <option value="Anarkali / Salwar Suit">Anarkali / Salwar Suit</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-stone-900 font-bold mb-1">Preferred Date *</label>
-                  <input
-                    type="date"
-                    required
-                    value={quickForm.preferredDate}
-                    onChange={(e) => setQuickForm({ ...quickForm, preferredDate: e.target.value })}
-                    className="w-full bg-white border-2 border-stone-300 rounded-xl px-3.5 py-2.5 text-stone-900 font-semibold focus:outline-none focus:border-[#780016] cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-stone-900 font-bold mb-1">Referral Code Optional</label>
-                <input
-                  type="text"
-                  value={quickForm.referralCode}
-                  onChange={(e) => setQuickForm({ ...quickForm, referralCode: e.target.value.toUpperCase() })}
-                  placeholder="E.G. ABI56 10% OFF"
-                  className="w-full bg-white border-2 border-stone-300 rounded-xl px-3.5 py-2.5 text-stone-900 font-bold uppercase placeholder:text-stone-400 focus:outline-none focus:border-[#780016]"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-[#780016] hover:bg-[#600012] text-white text-xs font-bold py-3.5 rounded-xl shadow-md flex items-center justify-center gap-2 transition cursor-pointer"
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {affiliates.slice(0, 4).map((aff) => (
+              <div
+                key={aff.id}
+                className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between"
               >
-                <Scissors className="w-3.5 h-3.5" />
-                Submit & Connect on WhatsApp
-              </button>
-
-              <p className="text-[10px] text-stone-500 text-center">
-                Note: 40% advance required upon design confirmation. Free delivery within Tamil Nadu for orders above ₹3,000.
-              </p>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. Patron Testimonials */}
-      <section className="max-w-7xl mx-auto px-6 space-y-6 text-center">
-        <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700">Authentic Reviews</span>
-          <h2 className="text-2xl font-serif font-bold text-[#780016]">Voices of Our Cherished Patrons</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          {[
-            {
-              quote: "The aari work on my Muhurtham blouse was breathtaking. The temple jewelry motifs and finishing were completely unmatchable even compared to top Chennai designers.",
-              name: "Sowmya Radhakrishnan",
-              loc: "Madurai KK Nagar",
-              tag: "Custom Bridal Aari Blouse"
-            },
-            {
-              quote: "Ordered 3 Madurai Sungudi cotton sarees via WhatsApp. The colours were true to photos, softest cotton weave, and delivered in 2 days across Tamil Nadu!",
-              name: "Kavitha Thirunavukkarasu",
-              loc: "Coimbatore RS Puram",
-              tag: "Madurai Sungudi Sarees"
-            },
-            {
-              quote: "Ahalya's Boutique provided video measurement guidance. The fitting for my sister's wedding half saree was 100% accurate. So proud of our Madurai artisans!",
-              name: "Ananya S.",
-              loc: "Chennai Mylapore",
-              tag: "Pavadai Dhavani Set"
-            }
-          ].map((rev, i) => (
-            <div key={i} className="bg-white p-5 rounded-2xl border border-[#ede3d8] shadow-sm flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <div className="flex text-amber-500 gap-0.5">
-                  {[...Array(5)].map((_, idx) => (
-                    <Star key={idx} className="w-3.5 h-3.5 fill-current" />
-                  ))}
-                </div>
-                <p className="text-xs text-stone-600 italic leading-relaxed">&ldquo;{rev.quote}&rdquo;</p>
-              </div>
-              <div className="pt-2 border-t border-stone-100 flex justify-between items-end">
                 <div>
-                  <h4 className="font-semibold text-stone-900 text-xs">{rev.name}</h4>
-                  <p className="text-[10px] text-teal-700 flex items-center gap-1 mt-0.5">
-                    <MapPin className="w-2.5 h-2.5" /> {rev.loc}
-                  </p>
+                  <div className="aspect-square bg-stone-100 overflow-hidden relative">
+                    <img src={aff.image} alt={aff.title} className="w-full h-full object-cover" />
+                    <span className="absolute top-2.5 right-2.5 bg-stone-900 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded">
+                      {aff.platform}
+                    </span>
+                  </div>
+                  <div className="p-4 space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase text-stone-400">{aff.category}</span>
+                    <h3 className="font-bold text-sm text-stone-900 line-clamp-2">{aff.title}</h3>
+                    <p className="text-sm font-black text-[#780016]">₹{aff.price.toLocaleString('en-IN')}</p>
+                  </div>
                 </div>
-                <span className="text-[9px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded font-medium">
-                  {rev.tag}
-                </span>
+                <div className="p-4 pt-0">
+                  <a
+                    href={aff.affiliateUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs py-2.5 rounded-xl transition-colors"
+                  >
+                    View Deal <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Custom Stitching & Studio Appointment Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="bg-[#780016] rounded-3xl p-8 sm:p-12 text-white grid grid-cols-1 lg:grid-cols-12 gap-8 items-center shadow-xl">
+          <div className="lg:col-span-8 space-y-4">
+            <span className="inline-block text-xs font-bold uppercase tracking-widest text-amber-300">
+              Bespoke Bridal &amp; Everyday Tailoring
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl font-black text-amber-50 leading-tight">
+              Need a Custom Aari Blouse or Saree Fall &amp; Pico Before Your Function?
+            </h2>
+            <p className="text-xs sm:text-sm text-amber-100/90 max-w-2xl leading-relaxed">
+              Visit our flagship boutique on West Masi Street, Madurai for personal fabric pairing and measurement trials, or book a doorstep blouse sample pickup.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link
+                href="/custom-stitching"
+                className="bg-amber-400 hover:bg-amber-300 text-[#4a000d] font-bold text-xs px-5 py-3 rounded-xl transition-colors"
+              >
+                Submit Stitching Request
+              </Link>
+              <Link
+                href="/book-appointment"
+                className="bg-white/10 hover:bg-white/20 border border-amber-200/30 text-amber-100 font-bold text-xs px-5 py-3 rounded-xl transition-colors"
+              >
+                Book Studio Visit
+              </Link>
             </div>
-          ))}
+          </div>
+
+          <div className="lg:col-span-4 bg-white/10 border border-amber-200/20 rounded-2xl p-5 space-y-3 text-xs">
+            <p className="font-serif font-bold text-base text-amber-300">Madurai Flagship Studio</p>
+            <div className="flex items-start gap-2.5 text-amber-100">
+              <MapPin className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
+              <span>West Masi Street, Near Meenakshi Amman Temple, Madurai, Tamil Nadu 625001</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-amber-100">
+              <Phone className="w-4 h-4 text-amber-300 shrink-0" />
+              <span>Mon – Sun: 10:00 AM – 9:00 PM IST</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-amber-100">
+              <ShieldCheck className="w-4 h-4 text-amber-300 shrink-0" />
+              <span>Silk Mark Certified Authentic Handlooms</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 9. Visit Flagship Store */}
-      <section className="max-w-7xl mx-auto px-6">
-        <div className="bg-[#fffdfa] border border-[#ebdccd] rounded-3xl p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div className="space-y-4">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700">Flagship Store</span>
-            <h2 className="text-2xl font-serif font-bold text-[#780016]">Visit Our Boutique in Madurai</h2>
-            <div className="space-y-2 text-xs text-stone-600">
-              <p className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-[#780016] shrink-0 mt-0.5" />
-                <span>No. 42, West Masi Street Near South Chithirai Gate, Opposite Sri Meenakshi Temple, Madurai - 625001, Tamil Nadu.</span>
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="font-semibold text-stone-800">Hours:</span> Mon – Sun: 9:30 AM – 9:30 PM All 7 Days Open
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="font-semibold text-stone-800">Phone:</span> +91 94432 15678 / 0452-2345678
-              </p>
-            </div>
-            <a
-              href="https://wa.me/919443215678?text=Please%20send%20store%20Google%20Map%20location"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#780016] hover:bg-[#600012] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-sm transition"
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              Request Store Location on WhatsApp
-            </a>
+      {/* Footer */}
+      <footer className="bg-stone-900 text-stone-300 border-t border-stone-800 mt-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
+          <div className="space-y-3">
+            <span className="font-serif font-black text-xl text-amber-300 block">Ahalya&apos;s Boutique</span>
+            <p className="text-stone-400 leading-relaxed">
+              Celebrating Madurai&apos;s weaving legacy with authentic Sungudi cottons, Kanchipuram silks, and handcrafted Aari bridal couture.
+            </p>
           </div>
 
-          <div className="bg-[#f0ece6] rounded-2xl border border-[#dfd6cb] p-6 h-64 flex flex-col justify-between relative overflow-hidden">
-            <div className="flex justify-between items-center text-[11px] text-stone-500">
-              <span className="font-semibold text-[#780016]">Madurai Heritage Precinct</span>
-              <span>Lat: 9.9195° N, Long: 78.1193° E</span>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="w-10 h-10 mx-auto rounded-full bg-[#780016] text-white flex items-center justify-center shadow-lg ring-4 ring-rose-100">
-                <MapPin className="w-5 h-5 fill-current" />
-              </div>
-              <div className="inline-block bg-[#780016] text-white font-bold text-xs px-3 py-1 rounded-md shadow">
-                Ahalya&apos;s Boutique Madurai
-              </div>
-              <p className="text-[11px] text-stone-600 font-medium">2 mins walk from Madurai West Tower</p>
-            </div>
-            <div className="text-right text-[10px] text-stone-400">
-              Interactive Map Simulation • Click to navigate
+          <div className="space-y-2.5">
+            <h4 className="font-bold text-white uppercase tracking-wider">Collections</h4>
+            <ul className="space-y-1.5 text-stone-400">
+              <li><Link href="/shop" className="hover:text-amber-300">Madurai Sungudi Sarees</Link></li>
+              <li><Link href="/shop" className="hover:text-amber-300">Kanchipuram Pattu Silks</Link></li>
+              <li><Link href="/shop" className="hover:text-amber-300">Pavadai Dhavani Sets</Link></li>
+              <li><Link href="/trending" className="hover:text-amber-300">Curated Festive Deals</Link></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2.5">
+            <h4 className="font-bold text-white uppercase tracking-wider">Services</h4>
+            <ul className="space-y-1.5 text-stone-400">
+              <li><Link href="/custom-stitching" className="hover:text-amber-300">Bridal Aari Embroidery</Link></li>
+              <li><Link href="/book-appointment" className="hover:text-amber-300">In-Store Trial Booking</Link></li>
+              <li><Link href="/about" className="hover:text-amber-300">Our Weaver Story</Link></li>
+              <li><Link href="/contact" className="hover:text-amber-300">Contact &amp; Directions</Link></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2.5">
+            <h4 className="font-bold text-white uppercase tracking-wider">Store &amp; Admin</h4>
+            <p className="text-stone-400">West Masi Street, Madurai, TN</p>
+            <div className="pt-2">
+              <Link
+                href="/admin"
+                className="inline-block text-[11px] font-semibold text-stone-400 hover:text-amber-300 border border-stone-700 px-3 py-1.5 rounded-lg"
+              >
+                Staff CMS Login
+              </Link>
             </div>
           </div>
         </div>
-      </section>
 
+        <div className="border-t border-stone-800 py-5 px-4 text-center text-[11px] text-stone-500">
+          &copy; {new Date().getFullYear()} Ahalya&apos;s Boutique, Madurai. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
