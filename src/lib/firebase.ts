@@ -17,19 +17,18 @@ const hasValidConfig = Boolean(
   !process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes('dummy')
 );
 
-let db: Firestore | null = null;
-let storage: FirebaseStorage | null = null;
+let dbInstance: Firestore | null = null;
+let storageInstance: FirebaseStorage | null = null;
 
 try {
   if (hasValidConfig) {
     const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    db = getFirestore(app);
-    storage = getStorage(app);
+    dbInstance = getFirestore(app);
+    storageInstance = getStorage(app);
   }
 } catch (error) {
   console.warn('Skipping Firebase init during build:', error);
-  db = null;
-  storage = null;
 }
 
-export { db, storage };
+export const db = dbInstance as Firestore;
+export const storage = storageInstance as FirebaseStorage;
